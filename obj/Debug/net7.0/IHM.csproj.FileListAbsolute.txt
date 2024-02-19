@@ -1,0 +1,14 @@
+C:\Users\Lardson\source\repos\I Hate Microsoft\IHM\bin\Debug\net7.0\IHM.exe
+C:\Users\Lardson\source\repos\I Hate Microsoft\IHM\bin\Debug\net7.0\IHM.deps.json
+C:\Users\Lardson\source\repos\I Hate Microsoft\IHM\bin\Debug\net7.0\IHM.runtimeconfig.json
+C:\Users\Lardson\source\repos\I Hate Microsoft\IHM\bin\Debug\net7.0\IHM.dll
+C:\Users\Lardson\source\repos\I Hate Microsoft\IHM\bin\Debug\net7.0\IHM.pdb
+C:\Users\Lardson\source\repos\I Hate Microsoft\IHM\obj\Debug\net7.0\IHM.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Lardson\source\repos\I Hate Microsoft\IHM\obj\Debug\net7.0\IHM.AssemblyInfoInputs.cache
+C:\Users\Lardson\source\repos\I Hate Microsoft\IHM\obj\Debug\net7.0\IHM.AssemblyInfo.cs
+C:\Users\Lardson\source\repos\I Hate Microsoft\IHM\obj\Debug\net7.0\IHM.csproj.CoreCompileInputs.cache
+C:\Users\Lardson\source\repos\I Hate Microsoft\IHM\obj\Debug\net7.0\IHM.dll
+C:\Users\Lardson\source\repos\I Hate Microsoft\IHM\obj\Debug\net7.0\refint\IHM.dll
+C:\Users\Lardson\source\repos\I Hate Microsoft\IHM\obj\Debug\net7.0\IHM.pdb
+C:\Users\Lardson\source\repos\I Hate Microsoft\IHM\obj\Debug\net7.0\IHM.genruntimeconfig.cache
+C:\Users\Lardson\source\repos\I Hate Microsoft\IHM\obj\Debug\net7.0\ref\IHM.dll
