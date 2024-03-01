@@ -100,6 +100,7 @@ internal class IHM
     }
 
     static void SetRegistryValue(string keyPath, string valueName, object value)
+
     {
         try
         {
@@ -119,5 +120,66 @@ internal class IHM
         {
             Console.WriteLine($"Error: {ex.Message}");
         }
+    }
+
+    // Helper methods to extract root key, view, and subkey from paths
+    static RegistryHive GetRootKey(string path)
+    {
+        string rootKeyString = path.Split('\\')[0].Substring(2); // Extract root key string (e.g., "HKLM")
+        return (RegistryHive)Enum.Parse(typeof(RegistryHive), rootKeyString);
+    }
+
+    static RegistryView GetView(string path)
+    {
+        return RegistryView.Registry64; // Use 64-bit view for compatibility
+    }
+
+    static string GetSubKey(string path)
+    {
+        return path.Split('\\')[1]; // Extract subkey name from path
+    }
+
+    static void DisableBloat()
+    {
+        Console.Clear();
+        Console.WriteLine("Disabling Windows Feedback Experience");
+        SetRegistryValue("HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", "Enabled", 0);
+        Console.WriteLine("Disabling Cortana as a part of Windows Search");
+        SetRegistryValue("HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "AllowCortana", 0);
+        Console.WriteLine("Disabling Bing Search in Start Menu");
+        SetRegistryValue("HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search", "BingSearchEnabled", 0);
+        Console.WriteLine("Adding Registry keys to prevent bloatware apps from returning...");
+        string registryPath = @"HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent";
+        string registryOEM = @"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager";
+
+        // Check for existing keys
+        if (RegistryKey.OpenBaseKey(GetRootKey(registryPath), GetView(registryPath)) == null)
+        {
+            // Create missing key
+            Registry.CurrentUser.CreateSubKey(GetSubKey(registryPath));
+        }
+
+        if (RegistryKey.OpenBaseKey(GetRootKey(registryOEM), GetView(registryOEM)) == null)
+        {
+            // Create missing key
+            Registry.CurrentUser.CreateSubKey(GetSubKey(registryOEM));
+        }
+
+        Registry.SetValue(registryPath, "DisableWindowsConsumerFeatures", 1, RegistryValueKind.DWord);
+        Registry.SetValue(registryOEM, "ContentDeliveryAllowed", 0, RegistryValueKind.DWord);
+        Registry.SetValue(registryOEM, "OemPreInstalledAppsEnabled", 0, RegistryValueKind.DWord);
+        Registry.SetValue(registryOEM, "PreInstalledAppsEnabled", 0, RegistryValueKind.DWord);
+        Registry.SetValue(registryOEM, "PreInstalledAppsEverEnabled", 0, RegistryValueKind.DWord);
+        Registry.SetValue(registryOEM, "SilentInstalledAppsEnabled", 0, RegistryValueKind.DWord);
+        Registry.SetValue(registryOEM, "SystemPaneSuggestionsEnabled", 0, RegistryValueKind.DWord);
+
+        Console.WriteLine("Registry keys added successfully.");
+        Console.WriteLine("Making Mixed Reality Portal uninstallable");
+        SetRegistryValue("HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Holographic", "FirstRunSucceeded", 0);
+        Console.WriteLine("Disabling Wi-Fi Sense");
+        
+        string WifiSense1 = "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting";
+        string WifiSense2 = "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\default\\WiFi\\AllowAutoConnectToWiFiSenseHotspots";
+        string WifiSense3 = "HKLM:\\SOFTWARE\\Microsoft\\WcmSvc\\wifinetworkmanager\\config";
     }
 }
