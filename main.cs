@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using System.Management.Automation;
 
 internal class IHM
 {
@@ -6,6 +7,7 @@ internal class IHM
     {
         Console.WriteLine("[1] Blacklist Microsoft data collection");
         Console.WriteLine("[2] Disable Cortana");
+        Console.WriteLine("[3] Disable Bloat (Optimization)");
         Console.WriteLine("Choose an option: ");
         var userInput2 = Console.ReadLine();
 
@@ -32,6 +34,10 @@ internal class IHM
                 EnableCortana();
             }
         }
+        else if (userInput2.ToLower() == "3")
+        {
+            DisableBloat();
+        }
         Console.WriteLine("Press Enter to exit...");
         Console.ReadLine();
     }
@@ -48,6 +54,8 @@ internal class IHM
         // Check the user's response
         if (userInput.ToLower() == "y")
         {
+
+            Console.Clear();
             try
             {
                 // Check if the destination file exists
@@ -60,6 +68,14 @@ internal class IHM
 
                 // Copy the file
                 File.Copy(sourcePath, destinationPath);
+
+                string DataCollection1 = "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection";
+                string DataCollection2 = "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection";
+                string DataCollection3 = "HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection";
+
+                SetRegistryValue(DataCollection1, "AllowTelemetry", 0);
+                SetRegistryValue(DataCollection2, "AllowTelemetry", 0);
+                SetRegistryValue(DataCollection3, "AllowTelemetry", 0);
 
                 Console.WriteLine("Done!");
             }
@@ -99,6 +115,33 @@ internal class IHM
         Console.WriteLine("Done.");
     }
 
+    static void DisableTask(string taskName)
+    {
+        using (var powerShell = PowerShell.Create())
+        {
+            powerShell.AddCommand("Get-ScheduledTask");
+            powerShell.AddParameter("TaskName", taskName);
+
+            var tasks = powerShell.Invoke();
+
+            if (tasks.Count > 0)
+            {
+                foreach (var task in tasks)
+                {
+                    powerShell.Commands.Clear();
+                    powerShell.AddCommand("Disable-ScheduledTask");
+                    powerShell.AddArgument("InputObject", task);
+                    powerShell.Invoke();
+                    Console.WriteLine($"Disabled task: {taskName}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Task '{taskName}' not found.");
+            }
+        }
+    }
+
     static void SetRegistryValue(string keyPath, string valueName, object value)
 
     {
@@ -119,6 +162,47 @@ internal class IHM
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    static void CreateRegistryEntry(string keyPath, string entryName, object value)
+    {
+        try
+        {
+            using (RegistryKey key = Registry.CurrentUser.CreateSubKey(keyPath))
+            {
+                if (key != null)
+                {
+                    key.SetValue(entryName, value);
+                }
+                else
+                {
+                    Console.WriteLine("Error: Unable to create registry entry.");
+                }
+            }
+        }
+
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    static bool RegistryKeyExists(string registryPath)
+    {
+        try
+        {
+            // Open the registry key in read-only mode
+            RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath, false);
+
+            // If the key is null, it doesn't exist
+            return key != null;
+        }
+        catch (Exception ex)
+        {
+            // Handle any exceptions that may occur during registry access
+            Console.WriteLine("Error: " + ex.Message);
+            return false;
         }
     }
 
@@ -148,38 +232,29 @@ internal class IHM
         SetRegistryValue("HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "AllowCortana", 0);
         Console.WriteLine("Disabling Bing Search in Start Menu");
         SetRegistryValue("HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search", "BingSearchEnabled", 0);
-        Console.WriteLine("Adding Registry keys to prevent bloatware apps from returning...");
-        string registryPath = @"HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent";
-        string registryOEM = @"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager";
-
-        // Check for existing keys
-        if (RegistryKey.OpenBaseKey(GetRootKey(registryPath), GetView(registryPath)) == null)
-        {
-            // Create missing key
-            Registry.CurrentUser.CreateSubKey(GetSubKey(registryPath));
-        }
-
-        if (RegistryKey.OpenBaseKey(GetRootKey(registryOEM), GetView(registryOEM)) == null)
-        {
-            // Create missing key
-            Registry.CurrentUser.CreateSubKey(GetSubKey(registryOEM));
-        }
-
-        Registry.SetValue(registryPath, "DisableWindowsConsumerFeatures", 1, RegistryValueKind.DWord);
-        Registry.SetValue(registryOEM, "ContentDeliveryAllowed", 0, RegistryValueKind.DWord);
-        Registry.SetValue(registryOEM, "OemPreInstalledAppsEnabled", 0, RegistryValueKind.DWord);
-        Registry.SetValue(registryOEM, "PreInstalledAppsEnabled", 0, RegistryValueKind.DWord);
-        Registry.SetValue(registryOEM, "PreInstalledAppsEverEnabled", 0, RegistryValueKind.DWord);
-        Registry.SetValue(registryOEM, "SilentInstalledAppsEnabled", 0, RegistryValueKind.DWord);
-        Registry.SetValue(registryOEM, "SystemPaneSuggestionsEnabled", 0, RegistryValueKind.DWord);
-
-        Console.WriteLine("Registry keys added successfully.");
         Console.WriteLine("Making Mixed Reality Portal uninstallable");
         SetRegistryValue("HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Holographic", "FirstRunSucceeded", 0);
-        Console.WriteLine("Disabling Wi-Fi Sense");
-        
-        string WifiSense1 = "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting";
-        string WifiSense2 = "HKLM:\\SOFTWARE\\Microsoft\\PolicyManager\\default\\WiFi\\AllowAutoConnectToWiFiSenseHotspots";
-        string WifiSense3 = "HKLM:\\SOFTWARE\\Microsoft\\WcmSvc\\wifinetworkmanager\\config";
+        Console.WriteLine("Disabling live tiles");
+        string liveRegistryKey = @"HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications";
+
+        if (Registry.GetValue(liveRegistryKey, null, null) == null)
+        {
+            RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications");
+            key.Close();
+        }
+
+        Registry.SetValue(liveRegistryKey, "NoTileApplicationNotification", 1);
+        Console.WriteLine("Disabling Location Tracking");
+        string SensorState = "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}";
+        string LocationConfig = "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\lfsvc\\Service\\Configuration";
+        SetRegistryValue(SensorState, "SensorPermissionState", 0);
+        SetRegistryValue(LocationConfig, "LocationConfig", 0);
+
+        Console.WriteLine("Disabling People icon in Taskbar");
+        SetRegistryValue("HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People", "PeopleBand", 0);
+
+
+
+        Console.WriteLine("\nDone!");
     }
 }
