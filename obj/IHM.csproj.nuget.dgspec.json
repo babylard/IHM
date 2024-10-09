@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Lardson\\source\\repos\\I Hate Microsoft\\IHM\\IHM.csproj": {}
+    "C:\\Users\\William\\Documents\\Vs Stuff\\C#\\IHM\\IHM.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Lardson\\source\\repos\\I Hate Microsoft\\IHM\\IHM.csproj": {
+    "C:\\Users\\William\\Documents\\Vs Stuff\\C#\\IHM\\IHM.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Lardson\\source\\repos\\I Hate Microsoft\\IHM\\IHM.csproj",
+        "projectUniqueName": "C:\\Users\\William\\Documents\\Vs Stuff\\C#\\IHM\\IHM.csproj",
         "projectName": "IHM",
-        "projectPath": "C:\\Users\\Lardson\\source\\repos\\I Hate Microsoft\\IHM\\IHM.csproj",
-        "packagesPath": "C:\\Users\\Lardson\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Lardson\\source\\repos\\I Hate Microsoft\\IHM\\obj\\",
+        "projectPath": "C:\\Users\\William\\Documents\\Vs Stuff\\C#\\IHM\\IHM.csproj",
+        "packagesPath": "C:\\Users\\William\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\William\\Documents\\Vs Stuff\\C#\\IHM\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Lardson\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\William\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -34,11 +34,22 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
+          "dependencies": {
+            "System.Management.Automation": {
+              "target": "Package",
+              "version": "[7.3.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -55,7 +66,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401\\RuntimeIdentifierGraph.json"
         }
       }
     }
