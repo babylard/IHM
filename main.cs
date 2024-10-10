@@ -94,47 +94,63 @@ internal class IHM
                 return;
             }
 
-            // Read existing entries from the hosts file
-            var existingEntries = new HashSet<string>();
-            foreach (var line in File.ReadAllLines(hostsFilePath))
+            // Read existing lines from the hosts file
+            var lines = File.ReadAllLines(hostsFilePath).ToList();
+            var existingEntries = new HashSet<string>(lines
+                .Where(line => !line.StartsWith("#") && !string.IsNullOrWhiteSpace(line))
+                .Select(line => line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1]));
+
+            // Prepare to add new entries
+            bool modified = false;
+            foreach (string domain in telemetryEntries)
             {
-                // Split lines on whitespace and take the second part if available (the domain)
-                var parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length > 1)
+                if (!existingEntries.Contains(domain))
                 {
-                    existingEntries.Add(parts[1]); // Add the domain part
+                    // Find the last comment or empty line to insert new entries before it
+                    int insertIndex = lines.Count; // Default to end
+                    for (int i = lines.Count - 1; i >= 0; i--)
+                    {
+                        if (string.IsNullOrWhiteSpace(lines[i]) || lines[i].StartsWith("#"))
+                        {
+                            insertIndex = i;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    lines.Insert(insertIndex, $"127.0.0.1 {domain}");
+                    Console.WriteLine($"Added: 127.0.0.1 {domain}");
+                    modified = true;
+                }
+                else
+                {
+                    Console.WriteLine($"Already exists: {domain}");
                 }
             }
 
-            // Append new entries only if they are not already present
-            using (StreamWriter sw = File.AppendText(hostsFilePath))
+            // Write back only if modified
+            if (modified)
             {
-                foreach (string domain in telemetryEntries)
-                {
-                    if (!existingEntries.Contains(domain))
-                    {
-                        sw.WriteLine($"127.0.0.1 {domain}");
-                        Console.WriteLine($"Added: 127.0.0.1 {domain}");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Already exists: {domain}");
-                    }
-                }
+                File.WriteAllLines(hostsFilePath, lines);
+                Console.WriteLine("Hosts file updated successfully.");
+            }
+            else
+            {
+                Console.WriteLine("No changes made to the hosts file.");
             }
 
+            // Disable telemetry in the registry
             string DataCollection1 = "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection";
             string DataCollection2 = "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection";
             string DataCollection3 = "HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection";
 
             Console.WriteLine("Disabling Telemetry");
-
             SetRegistryValue(DataCollection1, "AllowTelemetry", 0);
             SetRegistryValue(DataCollection2, "AllowTelemetry", 0);
             SetRegistryValue(DataCollection3, "AllowTelemetry", 0);
 
             Console.WriteLine("Disabling Location tracking");
-
             string SensorState = "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}";
             string LocationConfig = "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\lfsvc\\Service\\Configuration";
 
