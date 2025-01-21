@@ -3,55 +3,97 @@ using Microsoft.Win32;
 using System.ServiceProcess;
 
 internal class IHM
-{
+{   
     static void Main(string[] args)
     {
         while (true)
         {
-            Console.WriteLine("[1] Disable Telemetry");
-            Console.WriteLine("[2] Disable Bloat");
-            Console.WriteLine("[3] Re-enable Bloat");
-            Console.WriteLine("[4] Disable Windows Update Services");
-            Console.WriteLine("[5] Enable Windows Update Services");
-            Console.WriteLine("[6] Disable all");
-            Console.WriteLine("[7] Re-Enable all");
+            Console.WriteLine("[1] Telemetry");
+            Console.WriteLine("[2] Bloat");
+            Console.WriteLine("[3] Unessasary Services");
+            Console.WriteLine("[#] ------------------------ ");
+            Console.WriteLine("[4] Disable all");
+            Console.WriteLine("[5] Re-Enable all");
             Console.WriteLine("");
             Console.WriteLine("Choose an option: ");
-            var userInput1 = Console.ReadLine();
-
-            if (userInput1.ToLower() == "1")
+            string userInput1 = Console.ReadLine();
+            
+            if (userInput1 == "1")
             {
+                Console.Clear();
+                Console.WriteLine("[1] Disable Telemetry");
+                Console.WriteLine("[2] Re-Enable Telemetry");
+                Console.WriteLine("");
+                Console.WriteLine("Choose an option: ");
+
+                string userInput2 = Console.ReadLine();
+
+                if (userInput2 == "1")
+                {
+                    DisableSpyware();
+                }
+
+                else if (userInput2 == "2")
+                {
+                    EnableSpyware();
+                }
+            }
+
+            else if (userInput1 == "2")
+            {
+                Console.Clear();
+
+                Console.WriteLine("[1] Disable Bloat");
+                Console.WriteLine("[2] Re-Enable Bloat");
+                Console.WriteLine("");
+                Console.WriteLine("Choose an option: ");
+                string userInput3 = Console.ReadLine();
+
+                if (userInput3 == "1")
+                {
+                    DisableBloat();
+                }
+
+                else if (userInput3 == "2")
+                {
+                    EnableBloat();
+                }
+                
+            }
+
+            else if (userInput1 == "3")
+            {
+                Console.Clear();
+
+                Console.WriteLine("[1] Disable Unessasary Services");
+                Console.WriteLine("[2] Enable Unessasary Services");
+                Console.WriteLine("");
+                Console.WriteLine("Choose an option:");
+                string userInput4 = Console.ReadLine();
+
+                if (userInput4 == "1")
+                {
+                    DisableWindowsUpdates();
+                }
+
+                else if (userInput4 == "2")
+                {
+                    EnableWindowsUpdates();
+                }
+            }
+            
+            else if (userInput1 == "4")
+            {
+                Console.Clear();
                 DisableSpyware();
-            }
-            else if (userInput1.ToLower() == "2")
-            {
                 DisableBloat();
-            }
-
-            else if (userInput1.ToLower() == "3")
-            {
-                EnableBloat();
-            }
-
-            else if (userInput1.ToLower() == "4")
-            {
                 DisableWindowsUpdates();
             }
 
-            else if (userInput1.ToLower() == "5")
+            else if (userInput1 == "5")
             {
-                EnableWindowsUpdates();
-            }
-
-            else if (userInput1.ToLower() == "6")
-            {
-                DisableBloat();
-                DisableSpyware();
-                DisableWindowsUpdates();
-            }
-
-            else if (userInput1.ToLower() == "7")
-            {
+                Console.Clear();
+                EnableSpyware();
                 EnableBloat();
                 EnableWindowsUpdates();
             }
@@ -68,7 +110,7 @@ internal class IHM
                 continue; // Skip to the next iteration of the loop
             }
 
-            // Handle exit or menu return
+            // Handle exit and menu return.
             while (true)
             {
                 Console.WriteLine("Press Enter to exit, or M to return to Menu");
@@ -195,28 +237,84 @@ internal class IHM
                 Console.WriteLine("No changes made to the hosts file.");
             }
 
-            // Disable telemetry in the registry
-            string DataCollection1 = "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection";
-            string DataCollection2 = "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection";
-            string DataCollection3 = "HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection";
+            // Disable telemetry in registry.
 
-            Console.WriteLine("Disabling Telemetry");
-            SetRegistryValueSafe(DataCollection1, "AllowTelemetry", 0);
-            SetRegistryValueSafe(DataCollection2, "AllowTelemetry", 0);
-            SetRegistryValueSafe(DataCollection3, "AllowTelemetry", 0);
+            Console.WriteLine();
+            Console.WriteLine("\nDone!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}\n\n(Is your antivirus interfering?)");
+        }
+    }
 
-            Console.WriteLine("Disabling Location tracking");
+    static void EnableSpyware()
+    {
+        string hostsFilePath = @"C:\Windows\System32\drivers\etc\hosts";
+        Console.Clear();
+        Console.WriteLine("Overwriting Hosts");
+        try
+        {
+            // Check if the hosts file is writable
+            if (!IsFileWritable(hostsFilePath))
+            {
+                Console.WriteLine("Error: Unable to access hosts file. Make sure you have administrative privileges.");
+                return;
+            }
+            else
+            {
+                File.WriteAllText(hostsFilePath, """
+                                        # Copyright (c) 1993-2009 Microsoft Corp. 
+                    # 
+                    # This is a sample HOSTS file used by Microsoft TCP/IP for Windows. 
+                    # 
+                    # This file contains the mappings of IP addresses to host names. Each 
+                    # entry should be kept on an individual line. The IP address should 
+                    # be placed in the first column followed by the corresponding host name. 
+                    # The IP address and the host name should be separated by at least one 
+                    # space. 
+                    # 
+                    # Additionally, comments (such as these) may be inserted on individual 
+                    # lines or following the machine name denoted by a '#' symbol. 
+                    # 
+                    # For example: 
+                    # 
+                    #      102.54.94.97     rhino.acme.com          # source server 
+                    #       38.25.63.10     x.acme.com              # x client host 
+
+                    # localhost name resolution is handled within DNS itself. 
+                    #	127.0.0.1       localhost 
+                    #	::1             localhost
+                    """);
+            }
+
+
+            // Disable telemetry in registry
             string SensorState = "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}";
             string LocationConfig = "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\lfsvc\\Service\\Configuration";
+            string[] DataCollection =
+            {
+                "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
+                "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+                "HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection"
+            };
 
-            SetRegistryValueSafe(SensorState, "SensorPermissionState", 0);
-            SetRegistryValueSafe(LocationConfig, "Status", 0);
+            Console.WriteLine("Enabling Telemetry");
+            foreach (string path in DataCollection)
+            {
+                SetRegistryValueSafe(path, "AllowTelemetry", 1);
+            }
+
+            Console.WriteLine("Disabling Location tracking");
+
+            SetRegistryValueSafe(SensorState, "SensorPermissionState", 1);
+            SetRegistryValueSafe(LocationConfig, "Status", 1);
 
             Console.WriteLine("Disabling DoSvc");
-            SetRegistryValueSafe("HKLM:\\SYSTEM\\CurrentControlSet\\Services\\DoSvc", "Start", 4);
+            SetRegistryValueSafe("HKLM:\\SYSTEM\\CurrentControlSet\\Services\\DoSvc", "Start", 2);
             // 4 = Disabled
             // 2 = Enabled
-
+            Console.WriteLine("");
             Console.WriteLine("Done!");
         }
         catch (Exception ex)
@@ -326,97 +424,68 @@ internal class IHM
     static void DisableBloat()
     {
         Console.Clear();
-
-        Console.WriteLine("Disabling Windows Feedback Experience");
-        SetRegistryValueSafe("HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", "Enabled", 0);
-
-        Console.WriteLine("Making Mixed Reality Portal uninstallable");
-        SetRegistryValueSafe("HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Holographic", "FirstRunSucceeded", 0);
-
-        Console.WriteLine("Disabling live tiles");
-        string liveRegistryKey = "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications";
-
-        try
+        void SetRegistryValueSafe(string path, string name, object value)
         {
-            if (Registry.GetValue(liveRegistryKey, null, null) == null)
+            try
             {
-                using (RegistryKey key = Registry.CurrentUser.CreateSubKey("SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications"))
-                {
-                    // Key is created if it doesn't exist
-                }
+                SetRegistryValue(path, name, value);
+                Console.WriteLine($"Successfully set {name} to {value} in {path}.");
             }
-            Registry.SetValue(liveRegistryKey, "NoTileApplicationNotification", 1);
-            Console.WriteLine("Successfully disabled live tiles.");
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to set {name} in {path}: {ex.Message}");
+            }
         }
-        catch (Exception ex)
+
+        var registryEntries = new Dictionary<string, string>
+            {
+                { @"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", "Enabled"}, // Windows Feedback experience
+                { @"HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic", "FirstRunSucceeded"},// Mixed reality portal uninstallable
+                { @"HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications", "NoTileApplicationNotification"}, // Disable live tiles
+                { @"HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}", "SensorPermissionState" }, // Location Tracking
+                { @"HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration", "LocationConfig" }, // Location Tracking
+                { @"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People", "PeopleBand" }, // People icon in Taskbar
+                { @"HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SystemPaneSuggestionsEnabled" } // Start Reccomendations
+            };
+
+        foreach (var entry in registryEntries)
         {
-            Console.WriteLine($"Failed to disable live tiles: {ex.Message}");
+            SetRegistryValueSafe(entry.Key, entry.Value, 0);
         }
-
-        Console.WriteLine("Disabling Location Tracking");
-        string SensorState = "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}";
-        string LocationConfig = "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\lfsvc\\Service\\Configuration";
-
-        SetRegistryValueSafe(SensorState, "SensorPermissionState", 0);
-        SetRegistryValueSafe(LocationConfig, "LocationConfig", 0);
-
-        Console.WriteLine("Disabling People icon in Taskbar");
-        SetRegistryValueSafe("HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People", "PeopleBand", 0);
-
-        Console.WriteLine("Disabling start menu reccomendations");
-        SetRegistryValueSafe("HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "SystemPaneSuggestionsEnabled", 0);
-
-        Console.WriteLine();
-
         Console.WriteLine("\nDone!");
     }
 
     static void EnableBloat()
     {
         Console.Clear();
-
-        Console.WriteLine("Enabling Windows Feedback Experience");
-        SetRegistryValueSafe("HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", "Enabled", 1);
-
-        Console.WriteLine("Preventing Mixed Reality Portal from being uninstallable");
-        SetRegistryValueSafe("HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Holographic", "FirstRunSucceeded", 1);
-
-        Console.WriteLine("Disabling live tiles");
-        string liveRegistryKey = "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications";
-
-        try
+        void SetRegistryValueSafe(string path, string name, object value)
         {
-            if (Registry.GetValue(liveRegistryKey, null, null) == null)
+            try
             {
-                using (RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications"));
-                
-                // Key is created if it doesn't exist
-                
+                SetRegistryValue(path, name, value);
+                Console.WriteLine($"Successfully set {name} to {value} in {path}.");
             }
-            Registry.SetValue(liveRegistryKey, "NoTileApplicationNotification", 0);
-            Console.WriteLine("Successfully Enabled live tiles.");
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to set {name} in {path}: {ex.Message}");
+            }
         }
-        catch (Exception ex)
+
+        var registryEntries = new Dictionary<string, string>
+            {
+                { @"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", "Enabled"}, // Windows Feedback experience
+                { @"HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic", "FirstRunSucceeded"},// Mixed reality portal uninstallable
+                { @"HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications", "NoTileApplicationNotification"}, // Disable live tiles
+                { @"HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}", "SensorPermissionState" }, // Location Tracking
+                { @"HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration", "LocationConfig" }, // Location Tracking
+                { @"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People", "PeopleBand" }, // People icon in Taskbar
+                { @"HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SystemPaneSuggestionsEnabled" } // Start Reccomendations
+            };
+
+        foreach (var entry in registryEntries)
         {
-            Console.WriteLine($"Failed to enable live tiles: {ex.Message}");
+            SetRegistryValueSafe(entry.Key, entry.Value, 1);
         }
-
-        Console.WriteLine("Enabling Location Tracking");
-        string SensorState = "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}";
-        string LocationConfig = "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\lfsvc\\Service\\Configuration";
-
-        SetRegistryValueSafe(SensorState, "SensorPermissionState", 1);
-        SetRegistryValueSafe(LocationConfig, "LocationConfig", 1);
-
-        Console.WriteLine("Enabling People icon in Taskbar");
-        SetRegistryValueSafe("HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People", "PeopleBand", 1);
-
-        Console.WriteLine("Enabling start menu reccomendations");
-        SetRegistryValue("HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "SystemPaneSuggestionsEnabled", 0);
-
-        Console.WriteLine();
-
-        Console.WriteLine("\nDone!");
     }
 
     static void EnableWindowsUpdates()
