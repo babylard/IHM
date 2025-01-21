@@ -287,33 +287,6 @@ internal class IHM
                     #	::1             localhost
                     """);
             }
-
-
-            // Disable telemetry in registry
-            string SensorState = "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}";
-            string LocationConfig = "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\lfsvc\\Service\\Configuration";
-            string[] DataCollection =
-            {
-                "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
-                "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-                "HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection"
-            };
-
-            Console.WriteLine("Enabling Telemetry");
-            foreach (string path in DataCollection)
-            {
-                SetRegistryValueSafe(path, "AllowTelemetry", 1);
-            }
-
-            Console.WriteLine("Disabling Location tracking");
-
-            SetRegistryValueSafe(SensorState, "SensorPermissionState", 1);
-            SetRegistryValueSafe(LocationConfig, "Status", 1);
-
-            Console.WriteLine("Disabling DoSvc");
-            SetRegistryValueSafe("HKLM:\\SYSTEM\\CurrentControlSet\\Services\\DoSvc", "Start", 2);
-            // 4 = Disabled
-            // 2 = Enabled
             Console.WriteLine("");
             Console.WriteLine("Done!");
         }
