@@ -132,28 +132,6 @@ internal class IHM
         }
     }
 
-    static void SetRegistryValueSafe(string path, string name, object value)
-    {
-        try
-        {
-            using (var registryKey = Registry.LocalMachine.OpenSubKey(path, true))
-            {
-                if (registryKey != null)
-                {
-                    registryKey.SetValue(name, value, RegistryValueKind.DWord);
-                    Console.WriteLine($"Successfully set {name} to {value} in {path}.");
-                }
-                else
-                {
-                    Console.WriteLine($"Registry path {path} not found.");
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Failed to set {name} in {path}: {ex.Message}");
-        }
-    }
     static void DisableSpyware()
     {
         string hostsFilePath = @"C:\Windows\System32\drivers\etc\hosts";
@@ -386,11 +364,6 @@ internal class IHM
     static RegistryView GetView(string path)
     {
         return RegistryView.Registry64; // Use 64-bit view for compatibility
-    }
-
-    static string GetSubKey(string path)
-    {
-        return path.Split('\\')[1]; // Extract subkey name from path
     }
 
     static void DisableBloat()
