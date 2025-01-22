@@ -247,7 +247,6 @@ internal class IHM
             Console.WriteLine($"An error occurred: {ex.Message}\n\n(Is your antivirus interfering?)");
         }
     }
-
     static void EnableSpyware()
     {
         string hostsFilePath = @"C:\Windows\System32\drivers\etc\hosts";
@@ -296,7 +295,7 @@ internal class IHM
         }
     }
 
-    // Helper function to check if a file is writable
+    // Function to check if a file is writable
     static bool IsFileWritable(string path)
     {
         try
@@ -473,7 +472,7 @@ internal class IHM
         "WaaSMedicSvc",
         "BITS",
         "wuauserv"
-    };
+        };
 
         // Helper method to start services
         void StartService(string serviceName)
@@ -505,9 +504,16 @@ internal class IHM
 
         foreach (var service in servicesToEnable)
         {
-            Console.WriteLine($"Enabling {service}");
-            SetRegistryValueSafe(registryPath + service, "Start", 2); // 2 = Auto
-            StartService(service);
+            try
+            {
+                Console.WriteLine($"Enabling {service}");
+                SetRegistryValue(registryPath + service, "Start", 2); // 2 = Auto
+                StartService(service);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
     }
 
@@ -525,7 +531,6 @@ internal class IHM
         "wuauserv"
     };
 
-        // Helper method to stop services
         void StopService(string serviceName)
         {
             try
@@ -555,9 +560,16 @@ internal class IHM
 
         foreach (var service in servicesToDisable)
         {
-            Console.WriteLine($"Disabling {service}");
-            StopService(service);
-            SetRegistryValueSafe(registryPath + service, "Start", 4); // 4 = Disabled
+            try
+            {
+                Console.WriteLine($"Disabling {service}");
+                StopService(service);
+                SetRegistryValue(registryPath + service, "Start", 4); // 4 = Disabled
+            }
+            catch( Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
     }
 }
