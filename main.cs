@@ -53,23 +53,7 @@ internal class IHM
 
                 if (userInput3 == "1")
                 {
-                    Console.WriteLine("DISCLAIMER: This will remove many registry keys and the chances of me implementing a way to restore all of them in the Re-Enable function anytime soon is pretty slim. Continue?\n");
-                    Console.WriteLine("(y/n): ");
-                    string userinputwhatevernumber = Console.ReadLine();
-
-                    if(userinputwhatevernumber == "y")
-                    {
-                        DisableBloat();
-                    }
-                    else if(userinputwhatevernumber == "n")
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid input");
-                        break;
-                    }
+                    DisableBloat();
                 }
 
                 else if (userInput3 == "2")
@@ -150,6 +134,19 @@ internal class IHM
         }
     }
 
+    static void SetRegistryValueSafe(string path, string name, object value)
+    {
+        try
+        {
+            SetRegistryValue(path, name, value);
+            Console.WriteLine($"Successfully set {name} to {value} in {path}.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to set {name} in {path}: {ex.Message}");
+        }
+    }
+
     static void DisableSpyware()
     {
         string hostsFilePath = @"C:\Windows\System32\drivers\etc\hosts";
@@ -178,6 +175,13 @@ internal class IHM
             "assets.msn.com",
             "scorecardresearch.com",
             "data.msn.com"
+            };
+
+            string[] DataCollection = 
+            {
+                @"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection",
+                @"HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection",
+                @"HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection"
             };
 
             // Check if the hosts file is writable
@@ -234,6 +238,10 @@ internal class IHM
             }
 
             // Disable telemetry in registry.
+            foreach(string entry in DataCollection)
+            {
+                SetRegistryValueSafe(entry, "AllowTelemetry", 0);
+            }
 
             Console.WriteLine();
             Console.WriteLine("\nDone!");
@@ -387,18 +395,6 @@ internal class IHM
     static void DisableBloat()
     {
         Console.Clear();
-        void SetRegistryValueSafe(string path, string name, object value)
-        {
-            try
-            {
-                SetRegistryValue(path, name, value);
-                Console.WriteLine($"Successfully set {name} to {value} in {path}.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to set {name} in {path}: {ex.Message}");
-            }
-        }
 
         var registryEntries = new Dictionary<string, string>
             {
@@ -411,7 +407,7 @@ internal class IHM
                 { @"HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SystemPaneSuggestionsEnabled" } // Start Reccomendations
             };
 
-        //Prevent apps from returning
+        // Disable Microshit slop
         string OEM = @"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager";
 
         string[] keys =
