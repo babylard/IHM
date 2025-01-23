@@ -1,4 +1,7 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.ServiceProcess;
 
 internal class IHM
@@ -407,10 +410,28 @@ internal class IHM
                 { @"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People", "PeopleBand" }, // People icon in Taskbar
                 { @"HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SystemPaneSuggestionsEnabled" } // Start Reccomendations
             };
-        
+
+        //Prevent apps from returning
+        string OEM = @"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager";
+
+        string[] keys =
+        {
+            "ContentDeliveryAllowed",
+            "SOemPreInstalledAppsEnabled",
+            "PreInstalledAppsEnabled",
+            "PreInstalledAppsEverEnabled",
+            "SilentInstalledAppsEnabled",
+            "SystemPaneSuggestionsEnabled"
+        };
+
+
         foreach (var entry in registryEntries)
         {
             SetRegistryValueSafe(entry.Key, entry.Value, 0);
+        }
+        foreach(string key in keys)
+        {
+            SetRegistryValueSafe(OEM, key, 0);
         }
         Console.WriteLine("\nDone!");
     }
