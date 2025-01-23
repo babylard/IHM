@@ -1,5 +1,4 @@
-﻿using Microsoft.PowerShell.Commands;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using System.ServiceProcess;
 
 internal class IHM
@@ -51,7 +50,23 @@ internal class IHM
 
                 if (userInput3 == "1")
                 {
-                    DisableBloat();
+                    Console.WriteLine("DISCLAIMER: This will remove many registry keys and the chances of me implementing a way to restore all of them in the Re-Enable function anytime soon is pretty slim. Continue?\n");
+                    Console.WriteLine("(y/n): ");
+                    string userinputwhatevernumber = Console.ReadLine();
+
+                    if(userinputwhatevernumber == "y")
+                    {
+                        DisableBloat();
+                    }
+                    else if(userinputwhatevernumber == "n")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid input");
+                        break;
+                    }
                 }
 
                 else if (userInput3 == "2")
@@ -392,7 +407,7 @@ internal class IHM
                 { @"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People", "PeopleBand" }, // People icon in Taskbar
                 { @"HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SystemPaneSuggestionsEnabled" } // Start Reccomendations
             };
-
+        
         foreach (var entry in registryEntries)
         {
             SetRegistryValueSafe(entry.Key, entry.Value, 0);
@@ -429,10 +444,9 @@ internal class IHM
 
         foreach (var entry in registryEntries)
         {
-            SetRegistryValueSafe(entry.Key, entry.Value, 1);
+            SetRegistryValue(entry.Key, entry.Value, 1);
         }
     }
-
     static void EnableWindowsUpdates()
     {
         Console.Clear();
