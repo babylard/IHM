@@ -267,7 +267,7 @@ internal class IHM
                 return;
             }
             else
-            {
+            {   // Write out file with default comments.
                 File.WriteAllText(hostsFilePath, """
                                         # Copyright (c) 1993-2009 Microsoft Corp. 
                     # 
@@ -292,6 +292,21 @@ internal class IHM
                     #	::1             localhost
                     """);
             }
+
+            var DataCollection = new Dictionary<string, string>
+            {
+                { @"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection", "AllowTelemetry"}, // Telemetry
+                { @"HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection", "AllowTelemetry"}, // Telemetry
+                { @"HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection", "AllowTelemetry" }, // Telemetry
+                { @"HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}", "SensorPermissionState" }, // Location Tracking
+                { @"HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration", "LocationConfig" } // Location Tracking
+            };
+
+            foreach (var entry in DataCollection)
+            {
+                SetRegistryValueSafe(entry.Key, entry.Value, 1);
+            }
+
             Console.WriteLine("");
             Console.WriteLine("Done!");
         }
@@ -404,8 +419,6 @@ internal class IHM
                 { @"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", "Enabled"}, // Windows Feedback experience
                 { @"HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic", "FirstRunSucceeded"},// Mixed reality portal uninstallable
                 { @"HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications", "NoTileApplicationNotification"}, // Disable live tiles
-                { @"HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}", "SensorPermissionState" }, // Location Tracking
-                { @"HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration", "LocationConfig" }, // Location Tracking
                 { @"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People", "PeopleBand" }, // People icon in Taskbar
                 { @"HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SystemPaneSuggestionsEnabled" } // Start Reccomendations
             };
@@ -456,8 +469,6 @@ internal class IHM
                 { @"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", "Enabled"}, // Windows Feedback experience
                 { @"HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic", "FirstRunSucceeded"},// Mixed reality portal uninstallable
                 { @"HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications", "NoTileApplicationNotification"}, // Disable live tiles
-                { @"HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}", "SensorPermissionState" }, // Location Tracking
-                { @"HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration", "LocationConfig" }, // Location Tracking
                 { @"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People", "PeopleBand" }, // People icon in Taskbar
                 { @"HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SystemPaneSuggestionsEnabled" } // Start Reccomendations
             };
