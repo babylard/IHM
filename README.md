@@ -33,7 +33,7 @@ Re-Enabling is just this process but set to `1`.
 
 Modifies the `hosts` file in Windows, which is for mapping hostnames to IP Addresses. The file is written out with common addresses that Microsoft sends Telemetry to even after disabling Optional Data in the settings. They are all mapped to a [loopback address](https://nordvpn.com/cybersecurity/glossary/loopback-address); `127.0.0.1`
 
-May prevent you from accessing certain Bing services like the Widgets and Bing's new tab news menu. Below is a list of each address.
+May prevent you from accessing certain Bing services like the Widgets and Bing's new tab News Feed. Below is a list of each address.
 
 
 - telemetry.microsoft.com
