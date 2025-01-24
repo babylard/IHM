@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Security.Cryptography;
 using System.ServiceProcess;
 
@@ -464,6 +465,7 @@ internal class IHM
             }
         }
 
+        // Less important modifications
         var registryEntries = new Dictionary<string, string>
             {
                 { @"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", "Enabled"}, // Windows Feedback experience
@@ -473,9 +475,27 @@ internal class IHM
                 { @"HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SystemPaneSuggestionsEnabled" } // Start Reccomendations
             };
 
+        // Disable Microshit slop
+        string OEM = @"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager";
+
+        string[] keys =
+        {
+            "ContentDeliveryAllowed",
+            "SOemPreInstalledAppsEnabled",
+            "PreInstalledAppsEnabled",
+            "PreInstalledAppsEverEnabled",
+            "SilentInstalledAppsEnabled",
+            "SystemPaneSuggestionsEnabled"
+        };
+
         foreach (var entry in registryEntries)
         {
             SetRegistryValue(entry.Key, entry.Value, 1);
+        }
+
+        foreach(var key in keys)
+        {
+            SetRegistryValueSafe(OEM, key, 1);
         }
     }
     static void EnableWindowsUpdates()
