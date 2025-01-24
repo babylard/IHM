@@ -177,11 +177,13 @@ internal class IHM
             "data.msn.com"
             };
 
-            string[] DataCollection = 
+            var DataCollection = new Dictionary<string,string>
             {
-                @"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection",
-                @"HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection",
-                @"HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection"
+                { @"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection", "AllowTelemetry"}, // Telemetry
+                { @"HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection", "AllowTelemetry"}, // Telemetry
+                { @"HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection", "AllowTelemetry" }, // Telemetry
+                { @"HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}", "SensorPermissionState" }, // Location Tracking
+                { @"HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration", "LocationConfig" } // Location Tracking
             };
 
             // Check if the hosts file is writable
@@ -238,9 +240,9 @@ internal class IHM
             }
 
             // Disable telemetry in registry.
-            foreach(string entry in DataCollection)
+            foreach(var entry in DataCollection)
             {
-                SetRegistryValueSafe(entry, "AllowTelemetry", 0);
+                SetRegistryValueSafe(entry.Key, entry.Value, 0);
             }
 
             Console.WriteLine();
@@ -396,6 +398,7 @@ internal class IHM
     {
         Console.Clear();
 
+        // Less important modifications
         var registryEntries = new Dictionary<string, string>
             {
                 { @"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", "Enabled"}, // Windows Feedback experience
