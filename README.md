@@ -75,7 +75,7 @@ Handles Cryptographic Services as the name implies, which incldes ensuring that 
 Attempts to repair corrupt Windows Updates.
 
 ### BITS
-Downloads updates and other bs while Idle. Also possibly vunreble to dll Injection.
+Downloads updates and other bs while Idle. Also possibly able to be used as a Backdoor.
 
 ### wuauserv
 Main Windows Update service. Tends to use a ton of resources.
