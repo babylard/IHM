@@ -1,8 +1,4 @@
 ﻿using Microsoft.Win32;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
-using System.Security.Cryptography;
 using System.ServiceProcess;
 
 internal class IHM
