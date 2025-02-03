@@ -9,104 +9,38 @@ internal class IHM
         {
             Console.WriteLine("[1] Telemetry");
             Console.WriteLine("[2] Bloat");
-            Console.WriteLine("[3] Unessasary Services");
+            Console.WriteLine("[3] Unnecessary Services");
             Console.WriteLine("[#] ------------------------ ");
             Console.WriteLine("[4] Disable all");
             Console.WriteLine("[5] Re-Enable all");
             Console.WriteLine("");
             Console.WriteLine("Choose an option: ");
             string userInput1 = Console.ReadLine();
-            
-            if (userInput1 == "1")
+
+            switch (userInput1)
             {
-                Console.Clear();
-                Console.WriteLine("[1] Disable Telemetry");
-                Console.WriteLine("[2] Re-Enable Telemetry");
-                Console.WriteLine("");
-                Console.WriteLine("Choose an option: ");
-
-                string userInput2 = Console.ReadLine();
-
-                if (userInput2 == "1")
-                {
-                    DisableSpyware();
-                }
-
-                else if (userInput2 == "2")
-                {
-                    EnableSpyware();
-                }
-            }
-
-            else if (userInput1 == "2")
-            {
-                Console.Clear();
-
-                Console.WriteLine("[1] Disable Bloat");
-                Console.WriteLine("[2] Re-Enable Bloat");
-                Console.WriteLine("");
-                Console.WriteLine("Choose an option: ");
-                string userInput3 = Console.ReadLine();
-
-                if (userInput3 == "1")
-                {
-                    DisableBloat();
-                }
-
-                else if (userInput3 == "2")
-                {
-                    EnableBloat();
-                }
-                
-            }
-
-            else if (userInput1 == "3")
-            {
-                Console.Clear();
-
-                Console.WriteLine("[1] Disable Unessasary Services");
-                Console.WriteLine("[2] Enable Unessasary Services");
-                Console.WriteLine("");
-                Console.WriteLine("Choose an option:");
-                string userInput4 = Console.ReadLine();
-
-                if (userInput4 == "1")
-                {
-                    DisableWindowsUpdates();
-                }
-
-                else if (userInput4 == "2")
-                {
-                    EnableWindowsUpdates();
-                }
-            }
-            
-            else if (userInput1 == "4")
-            {
-                Console.Clear();
-                DisableSpyware();
-                DisableBloat();
-                DisableWindowsUpdates();
-            }
-
-            else if (userInput1 == "5")
-            {
-                Console.Clear();
-                EnableSpyware();
-                EnableBloat();
-                EnableWindowsUpdates();
-            }
-
-            else if (string.IsNullOrEmpty(userInput1))
-            {
-                return; // Exit the program
-            }
-            else
-            {
-                Console.WriteLine("Invalid option. Press enter to return to Menu.");
-                Console.ReadLine();
-                Console.Clear();
-                continue; // Skip to the next iteration of the loop
+                case "1":
+                    HandleTelemetry();
+                    break;
+                case "2":
+                    HandleBloat();
+                    break;
+                case "3":
+                    HandleUnnecessaryServices();
+                    break;
+                case "4":
+                    DisableAll();
+                    break;
+                case "5":
+                    EnableAll();
+                    break;
+                case "":
+                    return; // Exit the program
+                default:
+                    Console.WriteLine("Invalid option. Press enter to return to Menu.");
+                    Console.ReadLine();
+                    Console.Clear();
+                    continue; // Skip to the next iteration of the loop
             }
 
             // Handle exit and menu return.
@@ -129,6 +63,79 @@ internal class IHM
                 }
             }
         }
+    }
+
+    static void HandleTelemetry()
+    {
+        Console.Clear();
+        Console.WriteLine("[1] Disable Telemetry");
+        Console.WriteLine("[2] Re-Enable Telemetry");
+        Console.WriteLine("");
+        Console.WriteLine("Choose an option: ");
+        string userInput2 = Console.ReadLine();
+
+        if (userInput2 == "1")
+        {
+            DisableSpyware();
+        }
+        else if (userInput2 == "2")
+        {
+            EnableSpyware();
+        }
+    }
+
+    static void HandleBloat()
+    {
+        Console.Clear();
+        Console.WriteLine("[1] Disable Bloat");
+        Console.WriteLine("[2] Re-Enable Bloat");
+        Console.WriteLine("");
+        Console.WriteLine("Choose an option: ");
+        string userInput3 = Console.ReadLine();
+
+        if (userInput3 == "1")
+        {
+            DisableBloat();
+        }
+        else if (userInput3 == "2")
+        {
+            EnableBloat();
+        }
+    }
+
+    static void HandleUnnecessaryServices()
+    {
+        Console.Clear();
+        Console.WriteLine("[1] Disable Unnecessary Services");
+        Console.WriteLine("[2] Enable Unnecessary Services");
+        Console.WriteLine("");
+        Console.WriteLine("Choose an option:");
+        string userInput4 = Console.ReadLine();
+
+        if (userInput4 == "1")
+        {
+            DisableWindowsUpdates();
+        }
+        else if (userInput4 == "2")
+        {
+            EnableWindowsUpdates();
+        }
+    }
+
+    static void DisableAll()
+    {
+        Console.Clear();
+        DisableSpyware();
+        DisableBloat();
+        DisableWindowsUpdates();
+    }
+
+    static void EnableAll()
+    {
+        Console.Clear();
+        EnableSpyware();
+        EnableBloat();
+        EnableWindowsUpdates();
     }
 
     static void SetRegistryValueSafe(string path, string name, object value)
