@@ -9,7 +9,7 @@ Brief overview of what each option actually does.
 
 
 ## Bloat
-Disabling first sets the following registry entries to `0`. First string on each line is Folder location, second is Entry to be modified.
+Disabling first sets the following registry entries to `0`. First string on each line is Registry location, second is Entry to be modified.
 ```c#
 { @"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", "Enabled"}, // Windows Feedback experience
 { @"HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic", "FirstRunSucceeded"},// Mixed reality portal uninstallable
